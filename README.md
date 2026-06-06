@@ -33,3 +33,22 @@ Zelfi is a local-first autonomous AI agent that lives in your macOS system tray.
 ## Licence
 
 MIT
+
+## Running the PoC locally (macOS only)
+
+### Prerequisites
+- macOS with Apple Silicon (M1 or later)
+- [Rust](https://rustup.rs) installed
+- [Node.js](https://nodejs.org) 18+
+- [LM Studio](https://lmstudio.ai) running with Gemma 4 E4B-it MLX loaded and the local server started
+
+### Steps
+```bash
+git clone https://github.com/rvh-zelf/Zelfi.git
+cd Zelfi
+npm install
+npm run tauri dev
+```
+
+Zelfi will appear in your menu bar. Click the tray icon to open the window.
+Enter a goal and press Send — responses stream directly from your local model.
