@@ -1,7 +1,7 @@
 <script lang="ts">
   import { lmBaseUrl, lmConnected } from '$lib/stores/ui';
 
-  const VERSION = '2026.06.06.10';
+  const VERSION = '2026.06.06.11';
 </script>
 
 <div class="p-6 max-w-lg">
