@@ -1,0 +1,20 @@
+# Dependencies
+node_modules/
+
+# SvelteKit
+.svelte-kit/
+build/
+
+# Tauri / Rust
+src-tauri/target/
+
+# Environment
+.env
+.env.*
+!.env.example
+
+# macOS
+*.DS_Store
+
+# Python venv
+.venv/
