@@ -1,13 +1,22 @@
 <script lang="ts">
   import { activeView } from '$lib/stores/ui';
   import GoalsView from '$lib/components/views/GoalsView.svelte';
-  // Other views imported below as they are built
+  import InboxView from '$lib/components/views/InboxView.svelte';
+  import HistoryView from '$lib/components/views/HistoryView.svelte';
+  import MemoryView from '$lib/components/views/MemoryView.svelte';
+  import SettingsView from '$lib/components/views/SettingsView.svelte';
 </script>
 
-{#if $activeView === 'goals'}
-  <GoalsView />
-{:else}
-  <div class="flex items-center justify-center h-full text-base-content/30 text-sm">
-    {$activeView} — coming soon
-  </div>
-{/if}
+<div class="h-full overflow-hidden">
+  {#if $activeView === 'goals'}
+    <GoalsView />
+  {:else if $activeView === 'inbox'}
+    <InboxView />
+  {:else if $activeView === 'history'}
+    <HistoryView />
+  {:else if $activeView === 'memory'}
+    <MemoryView />
+  {:else if $activeView === 'settings'}
+    <SettingsView />
+  {/if}
+</div>
