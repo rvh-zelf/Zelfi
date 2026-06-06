@@ -1,15 +1,3 @@
-@import "tailwindcss";
-@plugin "daisyui" {
-  themes: dark --default;
-}
-
-/* ─── Zelfi teal accent — overrides DaisyUI dark theme primary ─── */
-:root,
-[data-theme="dark"] {
-  --color-primary: oklch(76% 0.17 185);
-  --color-primary-content: oklch(15% 0.05 185);
-  --color-accent: oklch(80% 0.19 185);
-  --color-accent-content: oklch(15% 0.05 185);
-  --color-secondary: oklch(65% 0.12 200);
-  --color-secondary-content: oklch(13% 0.024 200);
-}
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
