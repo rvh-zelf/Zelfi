@@ -3,6 +3,13 @@
   import { listen } from '@tauri-apps/api/event';
   import { onMount, onDestroy, tick } from 'svelte';
 
+  // LM Studio base URL — stored in localStorage, editable in the UI
+  let lmBaseUrl = $state(
+    typeof localStorage !== 'undefined'
+      ? (localStorage.getItem('zelfi_lm_url') ?? 'http://127.0.0.1:1234')
+      : 'http://127.0.0.1:1234'
+  );
+
   // LM Studio connection status
   let lmConnected = $state(false);
   let checking = $state(true);
@@ -21,14 +28,21 @@
   async function checkLmStudio() {
     checking = true;
     try {
-      const res = await fetch('http://localhost:1234/v1/models');
-      lmConnected = res.ok;
+      lmConnected = await invoke<boolean>('check_lm_studio', { baseUrl: lmBaseUrl });
     } catch {
       lmConnected = false;
     } finally {
       checking = false;
     }
   }
+
+  // Persist URL to localStorage and re-check connection whenever URL changes
+  $effect(() => {
+    if (typeof localStorage !== 'undefined') {
+      localStorage.setItem('zelfi_lm_url', lmBaseUrl);
+    }
+    checkLmStudio();
+  });
 
   async function scrollToBottom() {
     await tick();
@@ -69,7 +83,7 @@
     });
 
     try {
-      await invoke('send_message', { prompt: userPrompt });
+      await invoke('send_message', { prompt: userPrompt, baseUrl: lmBaseUrl });
     } catch (err) {
       steps[stepIdx].error = String(err);
       steps[stepIdx].complete = true;
@@ -94,9 +108,8 @@
   }
 
   onMount(() => {
-    checkLmStudio();
-    // Recheck connection every 30 seconds
-    const interval = setInterval(checkLmStudio, 30_000);
+    // Recheck every 10 seconds so the indicator stays live
+    const interval = setInterval(checkLmStudio, 10_000);
     return () => clearInterval(interval);
   });
 
@@ -112,7 +125,18 @@
       <span class="text-2xl font-bold tracking-tight text-primary">Zelfi</span>
       <span class="ml-2 text-xs text-base-content/50 italic">Your local AI agent</span>
     </div>
-    <div class="flex-none flex items-center gap-2">
+    <div class="flex-none flex items-center gap-3">
+      <!-- LM Studio URL input -->
+      <div class="flex items-center gap-1.5">
+        <label for="lm-url" class="text-xs text-base-content/50 whitespace-nowrap">LM Studio URL</label>
+        <input
+          id="lm-url"
+          type="text"
+          class="input input-bordered input-sm w-64 text-xs"
+          placeholder="http://127.0.0.1:1234"
+          bind:value={lmBaseUrl}
+        />
+      </div>
       <!-- LM Studio status indicator -->
       <div class="flex items-center gap-1.5" title={lmConnected ? 'LM Studio connected' : 'LM Studio not found'}>
         {#if checking}

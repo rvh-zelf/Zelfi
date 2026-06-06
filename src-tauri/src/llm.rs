@@ -1,5 +1,5 @@
 // LM Studio streaming client for Zelfi
-// Calls http://localhost:1234/v1/chat/completions with stream: true
+// Accepts base_url at runtime so the user can configure LM Studio's address in the UI
 // Emits "zelfi://token" events to the frontend as each token arrives
 // Emits "zelfi://done" event when streaming completes
 // Emits "zelfi://error" event on failure
@@ -48,8 +48,14 @@ struct ErrorPayload {
     message: String,
 }
 
-pub async fn stream_completion(window: Window, prompt: String) -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
+pub async fn stream_completion(
+    window: Window,
+    prompt: String,
+    base_url: String,
+) -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
     let client = Client::new();
+
+    let url = format!("{}/v1/chat/completions", base_url.trim_end_matches('/'));
 
     let request_body = ChatRequest {
         model: "gemma-4-e4b-it".to_string(),
@@ -62,7 +68,7 @@ pub async fn stream_completion(window: Window, prompt: String) -> Result<(), Box
     };
 
     let response = client
-        .post("http://localhost:1234/v1/chat/completions")
+        .post(&url)
         .header("Content-Type", "application/json")
         .json(&request_body)
         .send()

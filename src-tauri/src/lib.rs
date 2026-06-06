@@ -7,10 +7,19 @@ use tauri::{
 };
 
 #[tauri::command]
-async fn send_message(window: tauri::Window, prompt: String) -> Result<(), String> {
-    llm::stream_completion(window, prompt)
+async fn send_message(window: tauri::Window, prompt: String, base_url: String) -> Result<(), String> {
+    crate::llm::stream_completion(window, prompt, base_url)
         .await
         .map_err(|e| e.to_string())
+}
+
+#[tauri::command]
+async fn check_lm_studio(base_url: String) -> bool {
+    let url = format!("{}/v1/models", base_url.trim_end_matches('/'));
+    match reqwest::get(&url).await {
+        Ok(resp) => resp.status().is_success(),
+        Err(_) => false,
+    }
 }
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
@@ -70,7 +79,7 @@ pub fn run() {
                 }
             }
         })
-        .invoke_handler(tauri::generate_handler![send_message])
+        .invoke_handler(tauri::generate_handler![send_message, check_lm_studio])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
